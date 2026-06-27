@@ -92,8 +92,13 @@ export default function Home() {
   };
 
   const prospectiveCustomers = customers.filter(c => c.status === 'prospective');
-  const newCustomers = customers.filter(c => c.status === 'new');
-  const existingCustomers = customers.filter(c => c.status === 'existing');
+  
+  const sortByOldestContact = (a: Customer, b: Customer) => {
+    return new Date(a.last_contact_date).getTime() - new Date(b.last_contact_date).getTime();
+  };
+
+  const newCustomers = customers.filter(c => c.status === 'new').sort(sortByOldestContact);
+  const existingCustomers = customers.filter(c => c.status === 'existing').sort(sortByOldestContact);
 
   const renderTable = (data: Customer[], title: string, statusKey: 'new' | 'existing' | 'prospective') => {
     const visibleData = data.slice(0, visibleCounts[statusKey]);
