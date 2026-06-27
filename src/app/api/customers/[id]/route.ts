@@ -29,10 +29,33 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { status } = body;
-
     const db = await getDb();
-    const result = await db.query('UPDATE customers SET status = $1 WHERE id = $2', [status, id]);
+
+    const updates: string[] = [];
+    const values: any[] = [];
+    let queryIndex = 1;
+
+    if (body.status !== undefined) {
+      updates.push(`status = $${queryIndex++}`);
+      values.push(body.status);
+    }
+    if (body.phone !== undefined) {
+      updates.push(`phone = $${queryIndex++}`);
+      values.push(body.phone);
+    }
+    if (body.email !== undefined) {
+      updates.push(`email = $${queryIndex++}`);
+      values.push(body.email);
+    }
+
+    if (updates.length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    }
+
+    values.push(id);
+    const query = `UPDATE customers SET ${updates.join(', ')} WHERE id = $${queryIndex}`;
+    
+    const result = await db.query(query, values);
 
     if (result.rowCount === 0) {
         return NextResponse.json({ error: 'Customer not found' }, { status: 404 });

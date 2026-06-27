@@ -34,6 +34,8 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
   });
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditingContact, setIsEditingContact] = useState(false);
+  const [contactForm, setContactForm] = useState({ phone: '', email: '' });
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -44,6 +46,7 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
       if (res.ok) {
         const data = await res.json();
         _setCustomer(data);
+        setContactForm({ phone: data.phone || '', email: data.email || '' });
       } else {
         router.push('/');
       }
@@ -107,6 +110,24 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
     } catch (error) {
       console.error('Failed to delete customer:', error);
       setIsDeleting(false);
+    }
+  };
+
+  const handleContactUpdate = async () => {
+    try {
+      const res = await fetch(`/api/customers/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: contactForm.phone, email: contactForm.email })
+      });
+      if (res.ok) {
+        fetchCustomer();
+        setIsEditingContact(false);
+      } else {
+        alert('연락처 수정에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to update contact:', error);
     }
   };
 
@@ -191,11 +212,47 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
             <div style={{ color: 'var(--text-secondary)' }}>
               담당자: {_customer.contact_name} | 내부 담당: {_customer.manager_name}
             </div>
-            {(_customer.phone || _customer.email) && (
-              <div style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                {_customer.phone && <span>휴대폰: {_customer.phone} </span>}
-                {_customer.phone && _customer.email && <span>| </span>}
-                {_customer.email && <span>이메일: {_customer.email}</span>}
+            {isEditingContact ? (
+              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input 
+                  type="tel" 
+                  className="form-input" 
+                  placeholder="휴대폰 번호" 
+                  value={contactForm.phone} 
+                  onChange={e => setContactForm({...contactForm, phone: e.target.value})}
+                  style={{ width: '150px', padding: '0.25rem 0.5rem', minHeight: 'auto' }}
+                />
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  placeholder="이메일 주소" 
+                  value={contactForm.email} 
+                  onChange={e => setContactForm({...contactForm, email: e.target.value})}
+                  style={{ width: '200px', padding: '0.25rem 0.5rem', minHeight: 'auto' }}
+                />
+                <button className="btn btn-primary" style={{ padding: '0.25rem 0.75rem' }} onClick={handleContactUpdate}>저장</button>
+                <button className="btn btn-secondary" style={{ padding: '0.25rem 0.75rem' }} onClick={() => setIsEditingContact(false)}>취소</button>
+              </div>
+            ) : (
+              <div style={{ color: 'var(--text-secondary)', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {(_customer.phone || _customer.email) ? (
+                  <>
+                    {_customer.phone && <span>휴대폰: {_customer.phone} </span>}
+                    {_customer.phone && _customer.email && <span>| </span>}
+                    {_customer.email && <span>이메일: {_customer.email}</span>}
+                  </>
+                ) : (
+                  <span style={{ color: 'var(--text-muted)' }}>연락처 정보가 없습니다.</span>
+                )}
+                <button 
+                  onClick={() => setIsEditingContact(true)}
+                  style={{ 
+                    background: 'none', border: 'none', color: 'var(--primary-color)', 
+                    cursor: 'pointer', fontSize: '0.875rem', padding: '0 0.25rem' 
+                  }}
+                >
+                  [수정]
+                </button>
               </div>
             )}
           </div>
