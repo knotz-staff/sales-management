@@ -108,6 +108,26 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
     }
   };
 
+  const handleDeleteMeeting = async (meetingId: number) => {
+    if (!confirm('이 이력을 정말 삭제하시겠습니까?')) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/meetings/${meetingId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        fetchMeetings();
+        fetchCustomer();
+      } else {
+        alert('삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to delete meeting:', error);
+    }
+  };
+
   const handleMeetingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -234,14 +254,33 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
                   padding: '1rem', 
                   borderLeft: '4px solid var(--primary-color)', 
                   backgroundColor: 'var(--bg-primary)',
-                  borderRadius: '0 var(--radius-md) var(--radius-md) 0'
+                  borderRadius: '0 var(--radius-md) var(--radius-md) 0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start'
                 }}>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                    {meeting.meeting_date}
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                      {meeting.meeting_date}
+                    </div>
+                    <div style={{ fontWeight: 500 }}>
+                      {meeting.details}
+                    </div>
                   </div>
-                  <div style={{ fontWeight: 500 }}>
-                    {meeting.details}
-                  </div>
+                  <button 
+                    onClick={() => handleDeleteMeeting(meeting.id)}
+                    style={{ 
+                      background: 'none', 
+                      border: 'none', 
+                      color: '#ef4444', 
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      padding: '0.25rem'
+                    }}
+                    title="이력 삭제"
+                  >
+                    삭제
+                  </button>
                 </div>
               ))}
             </div>
