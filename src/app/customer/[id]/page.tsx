@@ -201,8 +201,8 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
               disabled={isUpdatingStatus}
             >
               <option value="prospective">잠정 고객</option>
-              <option value="new">신규 고객</option>
-              <option value="existing">기존 고객</option>
+              <option value="new">신규 대응</option>
+              <option value="existing">진행중</option>
             </select>
           </div>
         </div>

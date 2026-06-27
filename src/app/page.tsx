@@ -223,8 +223,8 @@ export default function Home() {
                   onChange={e => setFormData({...formData, status: e.target.value as 'new' | 'existing' | 'prospective'})}
                 >
                   <option value="prospective">잠정 고객</option>
-                  <option value="new">신규 고객</option>
-                  <option value="existing">기존 고객</option>
+                  <option value="new">신규 대응</option>
+                  <option value="existing">진행중</option>
                 </select>
               </div>
               <div className="form-group">
