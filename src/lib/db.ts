@@ -39,6 +39,7 @@ export async function getDb() {
         // Ignore if already exists
       }
 
+      await pool.query(`
         CREATE TABLE IF NOT EXISTS meetings (
           id SERIAL PRIMARY KEY,
           customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
