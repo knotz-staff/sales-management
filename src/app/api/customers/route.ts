@@ -28,14 +28,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { company_name, contact_name, manager_name, status, last_contact_date } = body;
+    const { company_name, contact_name, manager_name, status, last_contact_date, phone, email } = body;
 
     const db = await getDb();
     const result = await db.query(`
-      INSERT INTO customers (company_name, contact_name, manager_name, status, last_contact_date)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO customers (company_name, contact_name, manager_name, status, last_contact_date, phone, email)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id
-    `, [company_name, contact_name, manager_name, status, last_contact_date]);
+    `, [company_name, contact_name, manager_name, status, last_contact_date, phone, email]);
 
     return NextResponse.json({ id: result.rows[0].id, success: true }, { status: 201 });
   } catch (error) {

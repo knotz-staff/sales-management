@@ -10,6 +10,8 @@ type Customer = {
   manager_name: string;
   status: 'new' | 'existing' | 'prospective';
   last_contact_date: string;
+  phone?: string;
+  email?: string;
   latest_meeting_details?: string;
 };
 
@@ -19,6 +21,8 @@ export default function Home() {
   const [formData, setFormData] = useState({
     company_name: '',
     contact_name: '',
+    phone: '',
+    email: '',
     manager_name: '',
     status: 'new',
     last_contact_date: new Date().toISOString().split('T')[0],
@@ -75,6 +79,8 @@ export default function Home() {
         setFormData({
           company_name: '',
           contact_name: '',
+          phone: '',
+          email: '',
           manager_name: '',
           status: 'new',
           last_contact_date: new Date().toISOString().split('T')[0],
@@ -203,6 +209,24 @@ export default function Home() {
                   required
                   value={formData.contact_name}
                   onChange={e => setFormData({...formData, contact_name: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">고객 휴대폰 번호</label>
+                <input
+                  type="tel"
+                  className="form-input"
+                  value={formData.phone}
+                  onChange={e => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">고객 이메일 주소</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={formData.email}
+                  onChange={e => setFormData({...formData, email: e.target.value})}
                 />
               </div>
               <div className="form-group">

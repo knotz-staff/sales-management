@@ -21,8 +21,23 @@ export async function getDb() {
           manager_name VARCHAR(255) NOT NULL,
           status VARCHAR(50) NOT NULL CHECK(status IN ('new', 'existing', 'prospective')),
           last_contact_date DATE NOT NULL,
+          phone VARCHAR(255),
+          email VARCHAR(255),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+      `);
+
+      // Migration: Add new columns if they don't exist yet
+      try {
+        await pool.query('ALTER TABLE customers ADD COLUMN phone VARCHAR(255)');
+      } catch (e) {
+        // Ignore if already exists
+      }
+      try {
+        await pool.query('ALTER TABLE customers ADD COLUMN email VARCHAR(255)');
+      } catch (e) {
+        // Ignore if already exists
+      }
 
         CREATE TABLE IF NOT EXISTS meetings (
           id SERIAL PRIMARY KEY,

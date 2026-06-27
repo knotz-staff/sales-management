@@ -11,6 +11,8 @@ type Customer = {
   manager_name: string;
   status: 'new' | 'existing' | 'prospective';
   last_contact_date: string;
+  phone?: string;
+  email?: string;
 };
 
 type Meeting = {
@@ -189,6 +191,13 @@ export default function CustomerDetail({ params }: { params: Promise<{ id: strin
             <div style={{ color: 'var(--text-secondary)' }}>
               담당자: {_customer.contact_name} | 내부 담당: {_customer.manager_name}
             </div>
+            {(_customer.phone || _customer.email) && (
+              <div style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                {_customer.phone && <span>휴대폰: {_customer.phone} </span>}
+                {_customer.phone && _customer.email && <span>| </span>}
+                {_customer.email && <span>이메일: {_customer.email}</span>}
+              </div>
+            )}
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
