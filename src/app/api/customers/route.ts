@@ -4,7 +4,12 @@ import { getDb } from '@/lib/db';
 export async function GET() {
   try {
     const db = await getDb();
-    const result = await db.query('SELECT * FROM customers ORDER BY created_at DESC');
+    const result = await db.query(`
+      SELECT c.*, 
+             (SELECT details FROM meetings m WHERE m.customer_id = c.id ORDER BY meeting_date DESC, id DESC LIMIT 1) as latest_meeting_details
+      FROM customers c 
+      ORDER BY c.created_at DESC
+    `);
     
     // SQLite format Date formatting -> PostgreSQL Date objects formatting for JSON output
     // PostgreSQL DATE fields are returned as Date objects by pg driver

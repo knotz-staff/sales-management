@@ -10,6 +10,7 @@ type Customer = {
   manager_name: string;
   status: 'new' | 'existing' | 'prospective';
   last_contact_date: string;
+  latest_meeting_details?: string;
 };
 
 export default function Home() {
@@ -100,7 +101,7 @@ export default function Home() {
   const newCustomers = customers.filter(c => c.status === 'new').sort(sortByOldestContact);
   const existingCustomers = customers.filter(c => c.status === 'existing').sort(sortByOldestContact);
 
-  const renderTable = (data: Customer[], title: string, statusKey: 'new' | 'existing' | 'prospective') => {
+  const renderTable = (data: Customer[], title: string, statusKey: 'new' | 'existing' | 'prospective', showDetails: boolean = false) => {
     const visibleData = data.slice(0, visibleCounts[statusKey]);
     const hasMore = data.length > visibleCounts[statusKey];
 
@@ -115,12 +116,13 @@ export default function Home() {
                 <th>업체명</th>
                 <th>담당자</th>
                 <th>최근 대응일</th>
+                {showDetails && <th>최근 대응 내용</th>}
               </tr>
             </thead>
             <tbody>
               {visibleData.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>데이터가 없습니다.</td>
+                  <td colSpan={showDetails ? 5 : 4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>데이터가 없습니다.</td>
                 </tr>
               ) : (
                 visibleData.map((customer) => (
@@ -132,6 +134,16 @@ export default function Home() {
                       <td style={{ fontWeight: 500 }}>{customer.company_name}</td>
                       <td>{customer.manager_name}</td>
                       <td>{customer.last_contact_date}</td>
+                      {showDetails && (
+                        <td style={{ 
+                          maxWidth: '200px', 
+                          whiteSpace: 'nowrap', 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis' 
+                        }} title={customer.latest_meeting_details || '-'}>
+                          {customer.latest_meeting_details || '-'}
+                        </td>
+                      )}
                     </tr>
                   </Link>
                 ))
@@ -159,13 +171,10 @@ export default function Home() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-        {renderTable(newCustomers, "신규 고객 현황", 'new')}
-        {renderTable(existingCustomers, "기존 고객 현황", 'existing')}
-      </div>
-      
-      <div style={{ marginBottom: '2rem' }}>
-        {renderTable(prospectiveCustomers, "잠정 고객 현황", 'prospective')}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '2rem' }}>
+        {renderTable(existingCustomers, "프로젝트 현황", 'existing', true)}
+        {renderTable(newCustomers, "신규 사업 대응 현황", 'new', true)}
+        {renderTable(prospectiveCustomers, "잠정 고객 현황", 'prospective', false)}
       </div>
 
       {isModalOpen && (
